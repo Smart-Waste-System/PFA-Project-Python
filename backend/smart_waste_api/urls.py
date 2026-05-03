@@ -20,5 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('smart_waste_core.urls')),
-    path('api-auth/', include('rest_framework.urls')), # Ajoute cette ligne !
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/routing/', include('routing_app.urls')),
 ]
