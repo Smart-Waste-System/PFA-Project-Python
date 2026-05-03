@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'smart_waste_core',
+    'routing_app',
 ]
 
 MIDDLEWARE = [
