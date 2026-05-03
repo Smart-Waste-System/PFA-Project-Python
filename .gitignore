@@ -1,0 +1,17 @@
+# Environnements virtuels
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Variables d'environnement
+.env
+
+# Dossiers Mosquitto (Data et Logs)
+mosquitto/data/
+mosquitto/log/
+
+# Base de données locale (si tu en as une)
+db.sqlite3
