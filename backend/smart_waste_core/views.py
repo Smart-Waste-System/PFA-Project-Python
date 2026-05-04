@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import User, Container, Truck, Route, CollectionPoint
 from .serializers import UserSerializer, ContainerSerializer, TruckSerializer, RouteSerializer, CollectionPointSerializer
 from .permissions import IsAdminRole, IsDriverRole
@@ -15,7 +15,7 @@ class ContainerViewSet(viewsets.ModelViewSet):
     queryset = Container.objects.all()
     serializer_class = ContainerSerializer
     
-    # Sécurité de base : Il faut être connecté pour toucher à cette API
+    # Sécurité de base : Il faut être connecté pour toucher à cette API en général
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
@@ -23,7 +23,7 @@ class ContainerViewSet(viewsets.ModelViewSet):
         Logique RBAC Dynamique :
         - Les ADMINS peuvent tout faire (Créer, Supprimer).
         - Les CHAUFFEURS peuvent vider une poubelle.
-        - Tout le monde (connecté) peut lire la liste.
+        - TOUT LE MONDE (même sans token) peut voir la carte (action 'list').
         """
         if self.action in ['create', 'destroy']:
             # Seul le tableau de bord (Admin) peut créer ou supprimer physiquement un conteneur
@@ -31,9 +31,12 @@ class ContainerViewSet(viewsets.ModelViewSet):
         if self.action == 'empty_container':
             # Seul l'application mobile du chauffeur peut vider un conteneur
             return [IsDriverRole()]
+        if self.action == 'list':
+            # LE FIX EST ICI : On autorise la lecture de la liste pour ton Frontend React
+            return [AllowAny()]
         
-        # Pour les autres actions (list, retrieve), la règle par défaut (IsAuthenticated) s'applique
-        return super().get_permissions()
+        # Pour les autres actions (retrieve, update), la règle par défaut (IsAuthenticated) s'applique
+        return [permission() for permission in self.permission_classes]
 
     def get_queryset(self):
         # Le code d'Aymane pour le filtrage par URL (ex: ?alert_status=FULL)

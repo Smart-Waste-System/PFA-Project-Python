@@ -45,16 +45,26 @@ def calculate_route(request):
                 status=Route.Status.PLANNED
             )
 
-            # Création des CollectionPoints
+            # Création des CollectionPoints et extraction des coordonnées pour le Frontend
             stop_order_list = solution['stop_order']
             order_counter = 1
+            ordered_points_for_frontend = []
             
             for node_index in stop_order_list:
                 if node_index == 0:
+                    ordered_points_for_frontend.append({
+                        "latitude": truck.latitude,
+                        "longitude": truck.longitude
+                    })
                     continue 
                 
                 actual_container = container_list[node_index - 1]
                 
+                ordered_points_for_frontend.append({
+                    "latitude": actual_container.latitude,
+                    "longitude": actual_container.longitude
+                })
+
                 CollectionPoint.objects.create(
                     route=new_route,
                     container=actual_container,
@@ -71,7 +81,8 @@ def calculate_route(request):
         return Response({
             "message": "Tournée calculée avec succès.",
             "route_id": new_route.route_id, 
-            "total_distance_km": new_route.total_distance_km
+            "total_distance_km": new_route.total_distance_km,
+            "ordered_points": ordered_points_for_frontend
         }, status=status.HTTP_201_CREATED)
 
     except Exception as e:
