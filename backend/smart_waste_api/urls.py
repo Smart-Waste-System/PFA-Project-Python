@@ -16,10 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+)
+from smart_waste_core.serializers import CustomTokenObtainPairView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('smart_waste_core.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/routing/', include('routing_app.urls')),
+    
+    # Nouvelles routes pour l'authentification JWT
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

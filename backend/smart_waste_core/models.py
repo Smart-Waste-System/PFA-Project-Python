@@ -16,21 +16,25 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('role', 'ADMIN')
+        # 1. On s'assure que le superutilisateur reçoit le rôle SUPER_ADMIN
+        extra_fields.setdefault('role', 'SUPER_ADMIN')
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractBaseUser):
     class Role(models.TextChoices):
-        ADMIN  = 'ADMIN',  'Administrateur'
-        DRIVER = 'DRIVER', 'Chauffeur'
+        # 2. Ajout du rôle exclusif pour la gestion des comptes
+        SUPER_ADMIN = 'SUPER_ADMIN', 'Super Administrateur'
+        ADMIN       = 'ADMIN',       'Administrateur'
+        DRIVER      = 'DRIVER',      'Chauffeur'
 
     user_id    = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=100)
     last_name  = models.CharField(max_length=100)
     email      = models.EmailField(unique=True)
-    role       = models.CharField(max_length=10, choices=Role.choices, default=Role.DRIVER)
+    # Le rôle par défaut reste DRIVER pour sécuriser les créations accidentelles
+    role       = models.CharField(max_length=20, choices=Role.choices, default=Role.DRIVER)
     
     is_active    = models.BooleanField(default=True)
     is_staff     = models.BooleanField(default=False)
@@ -53,6 +57,9 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
+
+    def get_all_permissions(self, obj=None):
+        return set()
 
 
 # ── INFRASTRUCTURE CONNECTÉE (IOT) ───────────────────────────────────────────
