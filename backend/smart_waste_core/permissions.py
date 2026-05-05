@@ -1,11 +1,16 @@
 from rest_framework import permissions
 
-class IsAdminRole(permissions.BasePermission):
-    """ Permet l'accès uniquement aux utilisateurs ayant le rôle ADMIN. """
+class IsSuperAdmin(permissions.BasePermission):
+    """Accès exclusif au Super Administrateur"""
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.role == 'ADMIN')
+        return bool(request.user and request.user.is_authenticated and getattr(request.user, 'role', None) == 'SUPER_ADMIN')
 
-class IsDriverRole(permissions.BasePermission):
-    """ Permet l'accès uniquement aux utilisateurs ayant le rôle DRIVER. """
+class IsAdminOrSuperAdmin(permissions.BasePermission):
+    """Accès pour l'Admin (Gestion flotte) et le SuperAdmin"""
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.role == 'DRIVER')
+        return bool(request.user and request.user.is_authenticated and getattr(request.user, 'role', None) in ['ADMIN', 'SUPER_ADMIN'])
+
+class IsDriver(permissions.BasePermission):
+    """Accès pour le Chauffeur"""
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and getattr(request.user, 'role', None) == 'DRIVER')

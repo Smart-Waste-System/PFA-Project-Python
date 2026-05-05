@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import User, Container, Truck, Route, CollectionPoint
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,3 +28,16 @@ class CollectionPointSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollectionPoint
         fields = '__all__'
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # On ajoute notre champ personnalisé dans le payload du token !
+        token['role'] = user.role
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+        return token
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

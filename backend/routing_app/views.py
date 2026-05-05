@@ -1,4 +1,5 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from smart_waste_core.permissions import IsAdminOrSuperAdmin
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
@@ -6,6 +7,7 @@ from smart_waste_core.models import Container, Truck, Route, CollectionPoint
 from .vrp_solver import solve_vrp
 
 @api_view(['POST'])
+@permission_classes([IsAdminOrSuperAdmin])
 def calculate_route(request):
     try:
         # 1. Récupérer un camion DISPONIBLE ayant des coordonnées GPS valides
