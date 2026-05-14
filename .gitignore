@@ -15,3 +15,5 @@ mosquitto/log/
 
 # Base de données locale (si tu en as une)
 db.sqlite3
+frontend/.env.local
+frontend/.env

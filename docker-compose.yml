@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres_py:
     image: postgis/postgis:latest
@@ -9,7 +7,7 @@ services:
       POSTGRES_PASSWORD: password_py
       POSTGRES_DB: smart_waste_py
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - pgdata_py:/var/lib/postgresql/data
     restart: always
@@ -18,19 +16,52 @@ services:
     image: redis:alpine
     container_name: smart_waste_redis_python
     ports:
-      - "6380:6379"
+      - "6381:6379"
     restart: always
 
   mosquitto_py:
     image: eclipse-mosquitto:1.6
     container_name: smart_waste_mqtt_python
     ports:
-      - "1884:1883" # Port MQTT pour Python
-      - "9002:9001" # Port WebSockets pour Python
+      - "1884:1883"
+      - "9002:9001"
     volumes:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log:/mosquitto/log
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+    container_name: smart_waste_backend
+    depends_on:
+      - postgres_py
+      - mosquitto_py
+      - redis_py
+    environment:
+      POSTGRES_DB: smart_waste_py
+      POSTGRES_USER: aybex_py
+      POSTGRES_PASSWORD: password_py
+      POSTGRES_HOST: postgres_py
+      POSTGRES_PORT: 5432
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: smart_waste_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     restart: always
 
 volumes:
