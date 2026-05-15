@@ -25,10 +25,19 @@ class RouteSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CollectionPointSerializer(serializers.ModelSerializer):
+    container_detail = ContainerSerializer(source='container', read_only=True)
+
     class Meta:
         model = CollectionPoint
-        fields = '__all__'
-
+        fields = [
+            'point_id',
+            'route',
+            'container',
+            'container_detail',
+            'stop_order',
+            'is_emptied',
+            'emptied_at',
+        ]
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

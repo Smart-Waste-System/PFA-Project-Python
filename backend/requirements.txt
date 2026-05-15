@@ -1,0 +1,10 @@
+Django==5.1.15
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+django-jazzmin
+psycopg2-binary
+paho-mqtt
+ortools
+python-dotenv
+geopy

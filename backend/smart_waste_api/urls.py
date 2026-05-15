@@ -26,8 +26,6 @@ urlpatterns = [
     path('api/', include('smart_waste_core.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/routing/', include('routing_app.urls')),
-    
-    # Nouvelles routes pour l'authentification JWT
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

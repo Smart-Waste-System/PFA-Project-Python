@@ -1,3 +1,4 @@
+import os
 """
 Django settings for smart_waste_api project.
 
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-3xn=flcfx9aox_e(a5=+o2gu%77n-cb!9e*1k7syq_qlzy!g$)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '0.0.0.0', 'testserver']
 
 
 # Application definition
@@ -79,19 +80,16 @@ WSGI_APPLICATION = 'smart_waste_api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'smart_waste_py',
-        'USER': 'aybex_py',
-        'PASSWORD': 'password_py',
-        'HOST': 'localhost',
-        'PORT': '5433',
+        'NAME': os.environ.get('POSTGRES_DB', 'smart_waste_py'),
+        'USER': os.environ.get('POSTGRES_USER', 'aybex_py'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_py'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'postgres_py'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
