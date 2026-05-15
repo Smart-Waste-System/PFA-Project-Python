@@ -2,26 +2,27 @@ services:
   postgres_py:
     image: postgis/postgis:latest
     container_name: smart_waste_db_python
+    restart: always
     environment:
+      POSTGRES_DB: smart_waste_py
       POSTGRES_USER: aybex_py
       POSTGRES_PASSWORD: password_py
-      POSTGRES_DB: smart_waste_py
     ports:
       - "5434:5432"
     volumes:
       - pgdata_py:/var/lib/postgresql/data
-    restart: always
 
   redis_py:
     image: redis:alpine
     container_name: smart_waste_redis_python
+    restart: always
     ports:
       - "6381:6379"
-    restart: always
 
   mosquitto_py:
     image: eclipse-mosquitto:1.6
     container_name: smart_waste_mqtt_python
+    restart: always
     ports:
       - "1884:1883"
       - "9002:9001"
@@ -29,40 +30,42 @@ services:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log:/mosquitto/log
-    restart: always
 
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: smart_waste_backend
-    depends_on:
-      - postgres_py
-      - mosquitto_py
-      - redis_py
+    restart: always
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8001:8000"
     environment:
       POSTGRES_DB: smart_waste_py
       POSTGRES_USER: aybex_py
       POSTGRES_PASSWORD: password_py
       POSTGRES_HOST: postgres_py
-      POSTGRES_PORT: 5432
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-    restart: always
+      POSTGRES_PORT: "5432"
+    depends_on:
+      - postgres_py
+      - redis_py
+      - mosquitto_py
 
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     container_name: smart_waste_frontend
-    depends_on:
-      - backend
-    ports:
-      - "5173:5173"
+    restart: always
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
 
 volumes:
   pgdata_py:

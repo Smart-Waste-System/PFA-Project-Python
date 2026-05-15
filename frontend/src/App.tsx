@@ -69,7 +69,7 @@ export default function App() {
         setError('');
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/token/', {
+            const response = await axios.post('http://127.0.0.1:8001/api/token/', {
                 email: email,
                 password: password,
             });

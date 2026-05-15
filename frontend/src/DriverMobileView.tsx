@@ -8,8 +8,8 @@ export default function DriverMobileView({ user, onLogout }: { user: any; onLogo
 
     const fetchMission = async () => {
         try {
-            const routesResponse = await axios.get('http://127.0.0.1:8000/api/routes/');
-            const pointsResponse = await axios.get('http://127.0.0.1:8000/api/collection-points/');
+            const routesResponse = await axios.get('http://127.0.0.1:8001/api/routes/');
+            const pointsResponse = await axios.get('http://127.0.0.1:8001/api/collection-points/');
 
             const activeRoutes = routesResponse.data
                 .filter((route: any) => route.status === 'PLANNED' || route.status === 'IN_PROGRESS')
@@ -56,7 +56,7 @@ export default function DriverMobileView({ user, onLogout }: { user: any; onLogo
         try {
             const routeId = activeRoute.route_id || activeRoute.id;
 
-            await axios.post(`http://127.0.0.1:8000/api/routes/${routeId}/start/`);
+            await axios.post(`http://127.0.0.1:8001/api/routes/${routeId}/start/`);
 
             await fetchMission();
         } catch (error: any) {
@@ -71,7 +71,7 @@ export default function DriverMobileView({ user, onLogout }: { user: any; onLogo
         setIsLoading(true);
 
         try {
-            await axios.post(`http://127.0.0.1:8000/api/collection-points/${pointId}/validate/`);
+            await axios.post(`http://127.0.0.1:8001/api/collection-points/${pointId}/validate/`);
 
             setMission((previousMission) =>
                 previousMission.filter((point) => {

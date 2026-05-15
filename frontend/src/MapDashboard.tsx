@@ -66,7 +66,7 @@ export default function MapDashboard({ user, onLogout }: any) {
 
     const fetchContainers = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/containers/');
+            const response = await axios.get('http://localhost:8001/api/containers/');
             setContainers(response.data);
             return response.data;
         } catch (error) {
@@ -77,7 +77,7 @@ export default function MapDashboard({ user, onLogout }: any) {
 
     const fetchTrucks = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/trucks/');
+            const response = await axios.get('http://localhost:8001/api/trucks/');
             setTrucks(response.data);
             return response.data;
         } catch (error) {
@@ -88,7 +88,7 @@ export default function MapDashboard({ user, onLogout }: any) {
 
     const fetchRoutes = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/routes/');
+            const response = await axios.get('http://localhost:8001/api/routes/');
             setRoutes(response.data);
             return response.data;
         } catch (error) {
@@ -99,7 +99,7 @@ export default function MapDashboard({ user, onLogout }: any) {
 
     const fetchCollectionPoints = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/collection-points/');
+            const response = await axios.get('http://localhost:8001/api/collection-points/');
             setCollectionPoints(response.data);
             return response.data;
         } catch (error) {
@@ -111,7 +111,7 @@ export default function MapDashboard({ user, onLogout }: any) {
     const loadResources = async () => {
         try {
             const dRes = await axios
-                .get('http://127.0.0.1:8000/api/users/?role=DRIVER')
+                .get('http://127.0.0.1:8001/api/users/?role=DRIVER')
                 .catch(() => ({ data: [{ id: '1', email: 'driver1@smartwaste.ma' }] }));
 
             setDrivers(dRes.data);
@@ -192,9 +192,9 @@ export default function MapDashboard({ user, onLogout }: any) {
     const syncActiveRoutesOnAdminMap = async () => {
         try {
             const [routesResponse, pointsResponse, trucksResponse] = await Promise.all([
-                axios.get('http://localhost:8000/api/routes/'),
-                axios.get('http://localhost:8000/api/collection-points/'),
-                axios.get('http://localhost:8000/api/trucks/'),
+                axios.get('http://localhost:8001/api/routes/'),
+                axios.get('http://localhost:8001/api/collection-points/'),
+                axios.get('http://localhost:8001/api/trucks/'),
             ]);
 
             const routesList = routesResponse.data || [];
@@ -316,14 +316,14 @@ export default function MapDashboard({ user, onLogout }: any) {
                     if (!payload.physical_status) payload.physical_status = 'OPERATIONAL';
                 }
 
-                await axios.post(`http://localhost:8000/api/${formEntity}/`, payload);
+                await axios.post(`http://localhost:8001/api/${formEntity}/`, payload);
             } else {
                 const id =
                     formEntity === 'containers'
                         ? formData.container_id || formData.id
                         : formData.truck_id || formData.id || formData.license_plate;
 
-                await axios.patch(`http://localhost:8000/api/${formEntity}/${id}/`, formData);
+                await axios.patch(`http://localhost:8001/api/${formEntity}/${id}/`, formData);
             }
 
             setIsModalOpen(false);
@@ -338,7 +338,7 @@ export default function MapDashboard({ user, onLogout }: any) {
         if (!window.confirm('Es-tu sûr de vouloir supprimer cet élément ?')) return;
 
         try {
-            await axios.delete(`http://localhost:8000/api/${entity}/${id}/`);
+            await axios.delete(`http://localhost:8001/api/${entity}/${id}/`);
             await refreshAll();
         } catch (error) {
             console.error('Erreur lors de la suppression:', error);
@@ -349,7 +349,7 @@ export default function MapDashboard({ user, onLogout }: any) {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:8000/api/routing/calculate/', {});
+            const response = await axios.post('http://localhost:8001/api/routing/calculate/', {});
             console.log('Réponse backend VRP automatique:', response.data);
 
             await refreshAll();
@@ -378,7 +378,7 @@ export default function MapDashboard({ user, onLogout }: any) {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:8000/api/routing/calculate/', {
+            const response = await axios.post('http://localhost:8001/api/routing/calculate/', {
                 truck_id: selectedTruckId,
                 container_ids: selectedContainerIds,
             });
@@ -546,7 +546,7 @@ const getVisualTruckPosition = (latitude: any, longitude: any, index: number) =>
                         </>
                     ) : (
                         <button
-                            onClick={() => window.open('http://127.0.0.1:8000/admin/', '_blank')}
+                            onClick={() => window.open('http://127.0.0.1:8001/admin/', '_blank')}
                             className="px-4 py-2 rounded-md text-sm font-bold text-slate-300 hover:text-white bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 transition-all"
                         >
                             Administration Système
